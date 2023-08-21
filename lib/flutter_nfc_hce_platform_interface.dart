@@ -26,4 +26,8 @@ abstract class FlutterNfcHcePlatform extends PlatformInterface {
   Future<String?> getPlatformVersion() {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
+
+  Future<String?> startNfcHce(String content) {
+    throw UnimplementedError('platformVersion() has not been implemented.');
+  }
 }

@@ -14,4 +14,10 @@ class MethodChannelFlutterNfcHce extends FlutterNfcHcePlatform {
     final version = await methodChannel.invokeMethod<String>('getPlatformVersion');
     return version;
   }
+
+  @override
+  Future<String?> startNfcHce(String content) async {
+    final result = await methodChannel.invokeMethod<String>('startNfcHce', <String, dynamic>{'content': content});
+    return result;
+  }
 }

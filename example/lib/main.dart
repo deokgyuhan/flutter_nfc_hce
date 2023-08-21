@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-
-import 'package:flutter/services.dart';
 import 'package:flutter_nfc_hce/flutter_nfc_hce.dart';
 
 void main() {
@@ -16,48 +13,69 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
   final _flutterNfcHcePlugin = FlutterNfcHce();
+  bool _showNFCScanDialog = false;
 
-  @override
-  void initState() {
-    super.initState();
-    initPlatformState();
-  }
+  void _onScanButtonPressed() async {
+    var content = 'flutter_nfc_hce';
+    var result = await _flutterNfcHcePlugin.startNfcHce(content);
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
-    try {
-      platformVersion =
-          await _flutterNfcHcePlugin.getPlatformVersion() ?? 'Unknown platform version';
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
+    print('---------------------------------->' + result!);
 
     setState(() {
-      _platformVersion = platformVersion;
+      _showNFCScanDialog = true;
+    });
+  }
+
+  void _onCloseButtonPressed() {
+    setState(() {
+      _showNFCScanDialog = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
-        ),
-      ),
+          home: Scaffold(
+          appBar: AppBar(
+            title: const Text('Plugin Nfc Hce example app'),
+          ),
+          body: Container(
+            child: Stack(
+              children: [
+                // Background widget (e.g., your main content)
+                Container(
+                  color: Colors.transparent, // Make it transparent
+                  // Add your main content here
+                ),
+
+                // NFC Scan Dialog
+                if (_showNFCScanDialog)
+                  GestureDetector(
+                    onTap: _onCloseButtonPressed,
+                    child: Container(
+                      color: Colors.black54,
+                      alignment: Alignment.center,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset('assets/nfc_tag.png', width: 100, height: 100),
+                          SizedBox(height: 16),
+                          Text(
+                            'Start Nfc Hce',
+                            style: TextStyle(color: Colors.white, fontSize: 18),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),),
+          floatingActionButton: FloatingActionButton(
+            onPressed: _onScanButtonPressed,
+            child: Icon(Icons.nfc),
+          ),
+        )
     );
   }
 }
