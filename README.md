@@ -15,7 +15,7 @@ using Qifan Yang's NFCAndroid's com.qifan.nfcbank.cardEmulation.KHostApduService
 
 * Regarding the Android 13 version issues related to NFC HCE operation, 
 modifications were made to the following section with reference to
-https://github.com/MichaelsPlayground/NfcHceNdefEmulator.
+[https://github.com/MichaelsPlayground/NfcHceNdefEmulator](https://github.com/MichaelsPlayground/NfcHceNdefEmulator)
 
     ````xml
     // KHostApduService.kt
@@ -40,7 +40,7 @@ the supported AID is fixed to D2760000850101 for usage."
 
 
 * For NFC HCE Reader, you can refer to the example created using flutter_manager at
-https://github.com/deokgyuhan/flutter_nfc_hce_reader."
+[https://github.com/deokgyuhan/flutter_nfc_hce_reader](https://github.com/deokgyuhan/flutter_nfc_hce_reader)"
 
 
 ## Setup
