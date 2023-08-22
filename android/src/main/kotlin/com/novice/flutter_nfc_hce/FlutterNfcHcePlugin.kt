@@ -29,15 +29,26 @@ class FlutterNfcHcePlugin: FlutterPlugin, MethodCallHandler, ActivityAware  {
     if (call.method == "getPlatformVersion") {
       result.success("Android ${android.os.Build.VERSION.RELEASE}")
     } else if(call.method == "startNfcHce") {
-      val id = call.argument<String>("content")
-      mNfcAdapter = NfcAdapter.getDefaultAdapter(activity)
+      val content = call.argument<String>("content")
 
-      if (id != null) {
-        startNfcHce(id)
-        result.success("sueecss" + id.toString())
+      if (content != null) {
+        startNfcHce(content)
+        result.success("sueecss")
       } else {
         result.success("failure")
       }
+    } else if(call.method == "isSupportNfcHceFeature") {
+        if(supportNfcHceFeature()) {
+            result.success("true")
+        } else {
+            result.success("false")
+        }
+    } else if(call.method == "isNfcEnable") {
+        if(checkNFCEnable()) {
+            result.success("true")
+        } else {
+            result.success("false")
+        }
     }
   }
 
@@ -47,18 +58,22 @@ class FlutterNfcHcePlugin: FlutterPlugin, MethodCallHandler, ActivityAware  {
 
     override fun onDetachedFromActivity() {
         activity = null
+        mNfcAdapter = null
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
         activity = binding.activity
+        mNfcAdapter = NfcAdapter.getDefaultAdapter(activity)
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         activity = binding.activity
+        mNfcAdapter = NfcAdapter.getDefaultAdapter(activity)
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
         activity = null
+        mNfcAdapter = null
     }
     private fun startNfcHce(id: String) {
      if (supportNfcHceFeature()) {

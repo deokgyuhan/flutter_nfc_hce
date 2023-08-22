@@ -5,7 +5,16 @@ class FlutterNfcHce {
   Future<String?> getPlatformVersion() {
     return FlutterNfcHcePlatform.instance.getPlatformVersion();
   }
+
   Future<String?> startNfcHce(String content) {
     return FlutterNfcHcePlatform.instance.startNfcHce(content);
+  }
+
+  Future<String?> isSupportNfcHceFeature() {
+    return FlutterNfcHcePlatform.instance.isSupportNfcHceFeature();
+  }
+
+  Future<String?> isNfcEnable() {
+    return FlutterNfcHcePlatform.instance.isNfcEnable();
   }
 }

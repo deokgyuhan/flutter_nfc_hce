@@ -20,4 +20,16 @@ class MethodChannelFlutterNfcHce extends FlutterNfcHcePlatform {
     final result = await methodChannel.invokeMethod<String>('startNfcHce', <String, dynamic>{'content': content});
     return result;
   }
+
+  @override
+  Future<String?> isSupportNfcHceFeature() async {
+    var result =  await methodChannel.invokeMethod<String>('isSupportNfcHceFeature');
+    return result;
+  }
+
+  @override
+  Future<String?> isNfcEnable() async {
+    var result =  await methodChannel.invokeMethod<String>('isNfcEnable');
+    return result;
+  }
 }

@@ -15,8 +15,19 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final _flutterNfcHcePlugin = FlutterNfcHce();
   bool _showNFCScanDialog = false;
+  var platformVersion;
+  var isSupportNfcHceFeature;
+  var isNfcEnable;
+
+  void _getInfo() async {
+    platformVersion = await _flutterNfcHcePlugin.getPlatformVersion();
+    isSupportNfcHceFeature = await _flutterNfcHcePlugin.isSupportNfcHceFeature();
+    isNfcEnable = await _flutterNfcHcePlugin.isNfcEnable();
+  }
 
   void _onScanButtonPressed() async {
+    _getInfo();
+
     var content = 'flutter_nfc_hce';
     var result = await _flutterNfcHcePlugin.startNfcHce(content);
 
@@ -43,10 +54,19 @@ class _MyAppState extends State<MyApp> {
           body: Container(
             child: Stack(
               children: [
-                // Background widget (e.g., your main content)
+                // Background widget
                 Container(
-                  color: Colors.transparent, // Make it transparent
-                  // Add your main content here
+                  color: Colors.transparent,
+                    child:  Center(
+                        child: Column(
+                          children: [
+                            Text('platformVersion: ${platformVersion == null ? "": platformVersion}'),
+                            SizedBox(height: 5,),
+                            Text('isSupportNfcHceFeature: ${isSupportNfcHceFeature == null ? "" : isSupportNfcHceFeature}'),
+                            SizedBox(height: 5,),
+                            Text('isNfcEnagle: ${isNfcEnable == null ? "" : isNfcEnable}'),
+                          ],
+                        ))
                 ),
 
                 // NFC Scan Dialog
