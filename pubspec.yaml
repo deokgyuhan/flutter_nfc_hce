@@ -4,7 +4,7 @@ version: 0.0.1
 homepage: https://github.com/deokgyuhan/flutter_nfc_hce
 
 environment:
-  sdk: '>=2.12.0 <4.0.0'
+  sdk: '>=2.17.0 <4.0.0'
   flutter: '>=1.10.0'
 
 dependencies:
