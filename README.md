@@ -9,7 +9,8 @@ between cross-platforms using NFC.
 
 
 * The flutter_nfc_hce plugin project was created to utilize the functionality in flutter, 
-using Qifan Yang's NFCAndroid's com.qifan.nfcbank.cardEmulation.KHostApduService. 
+using Qifan Yang's NFCAndroid's com.qifan.nfcbank.cardEmulation.KHostApduService.
+(reference: https://github.com/underwindfall/NFCAndroid) 
 
 
 * Regarding the Android 13 version issues related to NFC HCE operation, 
