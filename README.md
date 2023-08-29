@@ -45,8 +45,8 @@ the supported AID is fixed to D2760000850101 for usage."
 ## 2. Screenshots
 
 
-| Main                               | Android NFC HCE                              |
-|------------------------------------|----------------------------------------------|
+| Main                               | Android NFC HCE                                  |
+|------------------------------------|--------------------------------------------------|
 | ![Main](screenshots/Main_View.png) | ![Android NFC HCE](screenshots/NFC_HCE_View.png) |
 
 ## 3. Setup
