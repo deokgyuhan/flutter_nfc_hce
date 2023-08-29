@@ -1,4 +1,7 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-sdk tools:overrideLibrary="dev.flutter.integration_test" />
 
     <!-- flutter_nfc_hce permission add begin -->
     <uses-permission android:name="android.permission.NFC" />
@@ -9,7 +12,7 @@
 
     <application
         android:label="flutter_nfc_hce_example"
-        android:name="${applicationName}"
+        android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

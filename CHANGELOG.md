@@ -1,11 +1,15 @@
+## 0.1.2
+
+* readme - screenshot add
+
 ## 0.1.1
 
-* TODO: modify example code 
+* modify example code 
 
 ## 0.1.0
 
-* TODO: add README.md 
+* add README.md 
 
 ## 0.0.9
 
-* TODO: initial release.
+* initial release.

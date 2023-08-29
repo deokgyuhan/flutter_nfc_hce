@@ -42,6 +42,12 @@ the supported AID is fixed to D2760000850101 for usage."
 * For NFC HCE Reader, you can refer to the example created using flutter_manager at
 [https://github.com/deokgyuhan/flutter_nfc_hce_reader](https://github.com/deokgyuhan/flutter_nfc_hce_reader)"
 
+## 2. Screenshots
+
+
+| Main                               | Android NFC HCE                              |
+|------------------------------------|----------------------------------------------|
+| ![Main](screenshots/Main_View.png) | ![Android NFC HCE](screenshots/NFC_HCE_View.png) |
 
 ## Setup
 **Android Setup**
