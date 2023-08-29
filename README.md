@@ -2,7 +2,7 @@
 
 "flutter_nfc_hce plugin project"
 
-## Introduction
+## 1. Introduction
 
 * This project was initiated during the process of exploring methods for exchanging data
 between cross-platforms using NFC. 
@@ -49,7 +49,7 @@ the supported AID is fixed to D2760000850101 for usage."
 |------------------------------------|----------------------------------------------|
 | ![Main](screenshots/Main_View.png) | ![Android NFC HCE](screenshots/NFC_HCE_View.png) |
 
-## Setup
+## 3. Setup
 **Android Setup**
 
 1) Add permission to your `AndroidManifest.xml`.
@@ -94,7 +94,7 @@ the supported AID is fixed to D2760000850101 for usage."
     </resources>
     ````  
 
-## Usage
+## 4. Usage
 ```dart
 import 'package:flutter_nfc_hce/flutter_nfc_hce.dart';
 
