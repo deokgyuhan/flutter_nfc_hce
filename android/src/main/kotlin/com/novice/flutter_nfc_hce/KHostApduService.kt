@@ -124,7 +124,8 @@ class KHostApduService : HostApduService() {
 
         Log.i(TAG, "onStartCommand() | NDEF$NDEF_URI")
 
-        return Service.START_STICKY
+//        return Service.START_STICKY
+        return Service.START_REDELIVER_INTENT
     }
 
     override fun processCommandApdu(commandApdu: ByteArray, extras: Bundle?): ByteArray {

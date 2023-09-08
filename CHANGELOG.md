@@ -1,3 +1,9 @@
+## 0.1.4
+
+* Support operation in both foreground and background, 
+* but specifically enable NFC card reader access even when the device screen is fully locked on Android 12 and higher.
+* add isSupportSecureNfcSupported api
+
 ## 0.1.3
 
 * modify the readme 

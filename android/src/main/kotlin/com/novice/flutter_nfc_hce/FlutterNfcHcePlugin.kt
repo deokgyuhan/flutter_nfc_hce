@@ -4,7 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.nfc.NfcAdapter
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -39,6 +41,12 @@ class FlutterNfcHcePlugin: FlutterPlugin, MethodCallHandler, ActivityAware  {
       }
     } else if(call.method == "isSupportNfcHceFeature") {
         if(supportNfcHceFeature()) {
+            result.success("true")
+        } else {
+            result.success("false")
+        }
+    }  else if(call.method == "isSupportSecureNfcSupported") {
+        if(supportSecureNfcSupported()) {
             result.success("true")
         } else {
             result.success("false")
@@ -84,6 +92,18 @@ class FlutterNfcHcePlugin: FlutterPlugin, MethodCallHandler, ActivityAware  {
 
     private fun supportNfcHceFeature() =
         checkNFCEnable() && activity?.packageManager!!.hasSystemFeature(PackageManager.FEATURE_NFC_HOST_CARD_EMULATION)
+
+    //2023.09.08 add function
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun supportSecureNfcSupported(): Boolean {
+        Log.i("TEST", "---------------------->isSecureNfcEnabled: "+mNfcAdapter?.isSecureNfcEnabled)
+
+        return if (mNfcAdapter == null) {
+            false
+        } else {
+            mNfcAdapter?.isSecureNfcEnabled == true
+        }
+    }
 
     private fun initService(id: String) {
       val intent = Intent(activity, KHostApduService::class.java)

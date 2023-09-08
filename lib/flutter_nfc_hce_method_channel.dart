@@ -28,6 +28,12 @@ class MethodChannelFlutterNfcHce extends FlutterNfcHcePlatform {
   }
 
   @override
+  Future<String?> isSupportSecureNfcSupported() async {
+    var result =  await methodChannel.invokeMethod<String>('isSupportSecureNfcSupported');
+    return result;
+  }
+
+  @override
   Future<String?> isNfcEnable() async {
     var result =  await methodChannel.invokeMethod<String>('isNfcEnable');
     return result;

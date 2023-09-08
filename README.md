@@ -79,7 +79,7 @@ the supported AID is fixed to D2760000850101 for usage."
     ````xml
     <?xml version="1.0" encoding="utf-8"?>
     <host-apdu-service xmlns:android="http://schemas.android.com/apk/res/android"
-                       android:description="@string/servicedesc" android:requireDeviceUnlock="false">
+                       android:description="@string/servicedesc" android:requireDeviceScreenOn="false" android:requireDeviceUnlock="false">
         <aid-group android:description="@string/aiddescription"  android:category="other" >
             <aid-filter android:name="D2760000850101"/>
         </aid-group>
@@ -107,6 +107,9 @@ var platformVersion = await _flutterNfcHcePlugin.getPlatformVersion();
 //isSupportNfcHceFeature
 var isSupportNfcHceFeature = await _flutterNfcHcePlugin.isSupportNfcHceFeature();
 
+//isSupportSecureNfcSupported
+var isSupportSecureNfcSupported = await _flutterNfcHcePlugin.isSupportSecureNfcSupported();
+
 //isNfcEnable 
 var isNfcEnable = await _flutterNfcHcePlugin.isNfcEnable();
 
@@ -116,3 +119,9 @@ var content = 'flutter_nfc_hce';
 //start nfc hce 
 var result = await _flutterNfcHcePlugin.startNfcHce(content);
 ```
+
+## 5. Update(2023.09.08)
+1. Support operation in both foreground and background, 
+   but specifically enable NFC card reader access even when the device screen is fully locked on Android 12 and higher.
+  * When applying option 1, make sure to update the contents of 'Add apduservice.xml to your res/xml'. 
+2. add isSupportSecureNfcSupported api

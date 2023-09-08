@@ -28,6 +28,12 @@ class MockFlutterNfcHcePlatform
     // TODO: implement startNfcHce
     throw UnimplementedError();
   }
+
+  @override
+  Future<String?> isSupportSecureNfcSupported() {
+    // TODO: implement isSupportSecureNfcSupported
+    throw UnimplementedError();
+  }
 }
 
 void main() {

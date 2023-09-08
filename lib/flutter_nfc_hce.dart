@@ -14,6 +14,10 @@ class FlutterNfcHce {
     return FlutterNfcHcePlatform.instance.isSupportNfcHceFeature();
   }
 
+  Future<String?> isSupportSecureNfcSupported() {
+    return FlutterNfcHcePlatform.instance.isSupportSecureNfcSupported();
+  }
+
   Future<String?> isNfcEnable() {
     return FlutterNfcHcePlatform.instance.isNfcEnable();
   }
