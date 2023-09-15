@@ -104,24 +104,46 @@ final _flutterNfcHcePlugin = FlutterNfcHce();
 //getPlatformVersion
 var platformVersion = await _flutterNfcHcePlugin.getPlatformVersion();
 
-//isSupportNfcHceFeature
-var isSupportNfcHceFeature = await _flutterNfcHcePlugin.isSupportNfcHceFeature();
+//isNfcHceSupported
+bool? isNfcHceSupported = await _flutterNfcHcePlugin.isNfcHceSupported();
 
-//isSupportSecureNfcSupported
-var isSupportSecureNfcSupported = await _flutterNfcHcePlugin.isSupportSecureNfcSupported();
+//isSecureNfcEnabled
+bool? isSecureNfcEnabled = await _flutterNfcHcePlugin.isSecureNfcEnabled();
 
-//isNfcEnable 
-var isNfcEnable = await _flutterNfcHcePlugin.isNfcEnable();
+//isNfcEnabled 
+bool? isNfcEnabled = await _flutterNfcHcePlugin.isNfcEnabled();
 
 //nfc content
 var content = 'flutter_nfc_hce';
 
 //start nfc hce 
 var result = await _flutterNfcHcePlugin.startNfcHce(content);
+
+//stop nfc hce 
+var result = await _flutterNfcHcePlugin.stopNfcHce();
 ```
 
-## 5. Update(2023.09.08)
+## 6. Update history
+
+### 2023.09.16 Update
+#### * Update Contributor: BugsOverBugs (https://github.com/BugsOverBugs) 
+
+1. Refactor the source code and function names.
+
+
+2. Add a default argument 'mimeType' to the 'startNfcHce()' function.
+
+
+3. Add 'stopNfcHce' API.
+
+
+4. Write the initial NFC HCE NDEF message to internal storage and, upon app restart, read and initialize it from the file.
+
+
+### 2023.09.08 Update
 1. Support operation in both foreground and background, 
    but specifically enable NFC card reader access even when the device screen is fully locked on Android 12 and higher.
+
   * When applying option 1, make sure to update the contents of 'Add apduservice.xml to your res/xml'. 
+  
 2. add isSupportSecureNfcSupported api

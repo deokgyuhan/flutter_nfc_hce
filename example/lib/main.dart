@@ -16,9 +16,9 @@ class _MyAppState extends State<MyApp> {
   final _flutterNfcHcePlugin = FlutterNfcHce();
   bool _showNFCScanDialog = false;
   var platformVersion;
-  var isNfcHceSupported;
-  var isSecureNfcEnabled;
-  var isNfcEnabled;
+  bool? isNfcHceSupported;
+  bool? isSecureNfcEnabled;
+  bool? isNfcEnabled;
 
   void _getInfo() async {
     platformVersion = await _flutterNfcHcePlugin.getPlatformVersion();
