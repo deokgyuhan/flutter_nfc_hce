@@ -1,3 +1,10 @@
+## 0.1.5
+
+* Refactor the source code and function names.
+* Add a default argument 'mimeType' to the 'startNfcHce()' function.
+* Add 'stopNfcHce' API.
+* Write the initial NFC HCE NDEF message to internal storage and, upon app restart, read and initialize it from the file.
+
 ## 0.1.4
 
 * Support operation in both foreground and background, 
