@@ -7,9 +7,8 @@ import android.nfc.NdefRecord
 import android.nfc.cardemulation.HostApduService
 import android.os.Bundle
 import android.util.Log
-import java.io.UnsupportedEncodingException
+import java.io.*
 import java.math.BigInteger
-import java.util.*
 
 class KHostApduService : HostApduService() {
 
@@ -103,17 +102,30 @@ class KHostApduService : HostApduService() {
 
     private val NDEF_ID = byteArrayOf(0xE1.toByte(), 0x04.toByte())
 
-    private var NDEF_URI = NdefMessage(createTextRecord("en", "Ciao, come va?", NDEF_ID))
+    //2023.09.15
+    //Read an Ndef message from a file and initialize it as a variable
+    private var NDEF_URI = NdefMessage(readNdefMessageFromFile()?.let {
+        createNdefRecord(
+            it, "text/plain", NDEF_ID)
+    })
+
     private var NDEF_URI_BYTES = NDEF_URI.toByteArray()
     private var NDEF_URI_LEN = fillByteArrayToFixedDimension(
         BigInteger.valueOf(NDEF_URI_BYTES.size.toLong()).toByteArray(),
         2,
     )
 
+    //2023.09.15 add variable
+    private val READ_BLOCK_SIZE: Int = 100
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent?.hasExtra("ndefMessage")!!) {
-            NDEF_URI =
-                NdefMessage(createTextRecord("en", intent.getStringExtra("ndefMessage")!!, NDEF_ID))
+        if (intent?.hasExtra("ndefMessage")!! && intent.hasExtra("mimeType")) {
+            val ndefMessage = intent.getStringExtra("ndefMessage")!!
+            val mimeType = intent.getStringExtra("mimeType")!!
+
+            writeNdefMessageToFile(ndefMessage)
+
+            NDEF_URI = NdefMessage(createNdefRecord(ndefMessage, mimeType, NDEF_ID))
 
             NDEF_URI_BYTES = NDEF_URI.toByteArray()
             NDEF_URI_LEN = fillByteArrayToFixedDimension(
@@ -257,6 +269,20 @@ class KHostApduService : HostApduService() {
         return result
     }
 
+    //2023.09.15
+    //Create a method with an additional 'mimeType' parameter.
+    private fun createNdefRecord(message: String, mimeType: String, id: ByteArray): NdefRecord {
+        if(mimeType == "text/plain") {
+            return createTextRecord("en", message, id);
+        }
+        val mimeTypeArray = mimeType.toByteArray(charset("US-ASCII"))
+
+        val payload = message.toByteArray(charset("UTF-8"))
+        Log.i(TAG, "message $message! mimeType: $mimeType")
+
+        return NdefRecord(NdefRecord.TNF_MIME_MEDIA, mimeTypeArray, id, payload)
+    }
+
     private fun createTextRecord(language: String, text: String, id: ByteArray): NdefRecord {
         val languageBytes: ByteArray
         val textBytes: ByteArray
@@ -292,5 +318,39 @@ class KHostApduService : HostApduService() {
         System.arraycopy(start, 0, filledArray, 0, start.size)
         System.arraycopy(array, 0, filledArray, start.size, array.size)
         return fillByteArrayToFixedDimension(filledArray, fixedSize)
+    }
+
+    //2023.09.15 add method
+    private fun readNdefMessageFromFile(): String? {
+        var ndefMessage: String? = "Ciao, come va?"
+
+        try {
+            val fileIn: FileInputStream = openFileInput("NdefMessage.txt")
+            val InputRead = InputStreamReader(fileIn)
+            val inputBuffer = CharArray(READ_BLOCK_SIZE)
+            var charRead: Int
+            while (InputRead.read(inputBuffer).also { charRead = it } > 0) {
+                // char to string conversion
+                val readstring = String(inputBuffer, 0, charRead)
+                ndefMessage += readstring
+            }
+            InputRead.close()
+
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+
+        return ndefMessage
+    }
+
+    private fun writeNdefMessageToFile(ndefMessage: String) {
+        try {
+            val fileout: FileOutputStream = openFileOutput("NdefMessage.txt", MODE_PRIVATE)
+            val outputWriter = OutputStreamWriter(fileout)
+            outputWriter.write(ndefMessage)
+            outputWriter.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }

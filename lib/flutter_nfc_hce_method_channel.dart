@@ -11,31 +11,37 @@ class MethodChannelFlutterNfcHce extends FlutterNfcHcePlatform {
 
   @override
   Future<String?> getPlatformVersion() async {
-    final version = await methodChannel.invokeMethod<String>('getPlatformVersion');
-    return version;
+    return await methodChannel.invokeMethod<String>('getPlatformVersion');
   }
 
   @override
-  Future<String?> startNfcHce(String content) async {
-    final result = await methodChannel.invokeMethod<String>('startNfcHce', <String, dynamic>{'content': content});
-    return result;
+  Future<String?> startNfcHce(String content, String mimeType) async {
+    return await methodChannel.invokeMethod<String>(
+      'startNfcHce',
+      <String, dynamic>{
+        'content': content,
+        'mimeType': mimeType,
+      },
+    );
   }
 
   @override
-  Future<String?> isSupportNfcHceFeature() async {
-    var result =  await methodChannel.invokeMethod<String>('isSupportNfcHceFeature');
-    return result;
+  Future<String?> stopNfcHce() async {
+    return await methodChannel.invokeMethod<String>('stopNfcHce');
   }
 
   @override
-  Future<String?> isSupportSecureNfcSupported() async {
-    var result =  await methodChannel.invokeMethod<String>('isSupportSecureNfcSupported');
-    return result;
+  Future<String?> isNfcHceSupported() async {
+    return await methodChannel.invokeMethod<String>('isNfcHceSupported');
   }
 
   @override
-  Future<String?> isNfcEnable() async {
-    var result =  await methodChannel.invokeMethod<String>('isNfcEnable');
-    return result;
+  Future<String?> isSecureNfcEnabled() async {
+    return await methodChannel.invokeMethod<String>('isSecureNfcEnabled');
+  }
+
+  @override
+  Future<String?> isNfcEnabled() async {
+    return await methodChannel.invokeMethod<String>('isNfcEnabled');
   }
 }

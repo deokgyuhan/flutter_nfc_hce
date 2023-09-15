@@ -27,37 +27,52 @@ class FlutterNfcHcePlugin: FlutterPlugin, MethodCallHandler, ActivityAware  {
     channel.setMethodCallHandler(this)
   }
 
+  //2023.09.15 refactoring code
   override fun onMethodCall(call: MethodCall, result: Result) {
-    if (call.method == "getPlatformVersion") {
-      result.success("Android ${android.os.Build.VERSION.RELEASE}")
-    } else if(call.method == "startNfcHce") {
-      val content = call.argument<String>("content")
+      when (call.method) {
+          "getPlatformVersion" -> {
+              result.success("Android ${android.os.Build.VERSION.RELEASE}")
+          }
+          "startNfcHce" -> {
+              val content = call.argument<String>("content")
+              val mimeType = call.argument<String>("mimeType")
 
-      if (content != null) {
-        startNfcHce(content)
-        result.success("sueecss")
-      } else {
-        result.success("failure")
+              if (content != null && mimeType != null) {
+                  startNfcHce(content, mimeType)
+                  result.success("success")
+              } else {
+                  result.success("failure")
+              }
+          }
+          "stopNfcHce" -> {
+              stopNfcHce()
+              result.success("true")
+          }
+          "isNfcHceSupported" -> {
+              if (isNfcHceSupported()) {
+                  result.success("true")
+              } else {
+                  result.success("false")
+              }
+          }
+          "isSecureNfcEnabled" -> {
+              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && isSecureNfcEnabled()) {
+                  result.success("true")
+              } else {
+                  result.success("false")
+              }
+          }
+          "isNfcEnabled" -> {
+              if (isNfcEnabled()) {
+                  result.success("true")
+              } else {
+                  result.success("false")
+              }
+          }
+          else -> {
+              result.notImplemented()
+          }
       }
-    } else if(call.method == "isSupportNfcHceFeature") {
-        if(supportNfcHceFeature()) {
-            result.success("true")
-        } else {
-            result.success("false")
-        }
-    }  else if(call.method == "isSupportSecureNfcSupported") {
-        if(supportSecureNfcSupported()) {
-            result.success("true")
-        } else {
-            result.success("false")
-        }
-    } else if(call.method == "isNfcEnable") {
-        if(checkNFCEnable()) {
-            result.success("true")
-        } else {
-            result.success("false")
-        }
-    }
   }
 
   override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
@@ -83,19 +98,23 @@ class FlutterNfcHcePlugin: FlutterPlugin, MethodCallHandler, ActivityAware  {
         activity = null
         mNfcAdapter = null
     }
-    private fun startNfcHce(id: String) {
-     if (supportNfcHceFeature()) {
-      Log.i("TEST", "---------------------->supportNfcHceFeature: "+supportNfcHceFeature())
-      initService(id)
-      }
+    private fun startNfcHce(id: String, mimeType: String) {
+        if (isNfcHceSupported()) {
+            Log.i("TEST", "---------------------->supportNfcHceFeature: "+isNfcHceSupported())
+            initService(id, mimeType)
+        }
+    }
+    private fun stopNfcHce() {
+        val intent = Intent(activity, KHostApduService::class.java)
+        activity?.stopService(intent)
     }
 
-    private fun supportNfcHceFeature() =
-        checkNFCEnable() && activity?.packageManager!!.hasSystemFeature(PackageManager.FEATURE_NFC_HOST_CARD_EMULATION)
+    private fun isNfcHceSupported() =
+        isNfcEnabled() && activity?.packageManager!!.hasSystemFeature(PackageManager.FEATURE_NFC_HOST_CARD_EMULATION)
 
     //2023.09.08 add function
     @RequiresApi(Build.VERSION_CODES.Q)
-    private fun supportSecureNfcSupported(): Boolean {
+    private fun isSecureNfcEnabled(): Boolean {
         Log.i("TEST", "---------------------->isSecureNfcEnabled: "+mNfcAdapter?.isSecureNfcEnabled)
 
         return if (mNfcAdapter == null) {
@@ -105,13 +124,14 @@ class FlutterNfcHcePlugin: FlutterPlugin, MethodCallHandler, ActivityAware  {
         }
     }
 
-    private fun initService(id: String) {
+    private fun initService(id: String, mimeType: String) {
       val intent = Intent(activity, KHostApduService::class.java)
       intent.putExtra("ndefMessage", id)
-        activity?.startService(intent)
+      intent.putExtra("mimeType", mimeType)
+      activity?.startService(intent)
     }
 
-    private fun checkNFCEnable(): Boolean {
+    private fun isNfcEnabled(): Boolean {
         return if (mNfcAdapter == null) {
             false
         } else {

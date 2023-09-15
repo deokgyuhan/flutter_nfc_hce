@@ -12,26 +12,32 @@ class MockFlutterNfcHcePlatform
   Future<String?> getPlatformVersion() => Future.value('42');
 
   @override
-  Future<String?> isNfcEnable() {
-    // TODO: implement isNfcEnable
+  Future<String?> isNfcEnabled() {
+    // TODO: implement isNfcEnabled
     throw UnimplementedError();
   }
 
   @override
-  Future<String?> isSupportNfcHceFeature() {
-    // TODO: implement isSupportNfcHceFeature
+  Future<String?> isNfcHceSupported() {
+    // TODO: implement isNfcHceSupported
     throw UnimplementedError();
   }
 
   @override
-  Future<String?> startNfcHce(String content) {
+  Future<String?> startNfcHce(String content, String mimeType) {
     // TODO: implement startNfcHce
     throw UnimplementedError();
   }
 
   @override
-  Future<String?> isSupportSecureNfcSupported() {
-    // TODO: implement isSupportSecureNfcSupported
+  Future<String?> isSecureNfcEnabled() {
+    // TODO: implement isSecureNfcEnabled
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<String?> stopNfcHce() {
+    // TODO: implement stopNfcHce
     throw UnimplementedError();
   }
 }

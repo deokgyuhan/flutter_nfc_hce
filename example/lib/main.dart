@@ -16,15 +16,15 @@ class _MyAppState extends State<MyApp> {
   final _flutterNfcHcePlugin = FlutterNfcHce();
   bool _showNFCScanDialog = false;
   var platformVersion;
-  var isSupportNfcHceFeature;
-  var isSupportSecureNfcSupported;
-  var isNfcEnable;
+  var isNfcHceSupported;
+  var isSecureNfcEnabled;
+  var isNfcEnabled;
 
   void _getInfo() async {
     platformVersion = await _flutterNfcHcePlugin.getPlatformVersion();
-    isSupportNfcHceFeature = await _flutterNfcHcePlugin.isSupportNfcHceFeature();
-    isSupportSecureNfcSupported = await _flutterNfcHcePlugin.isSupportSecureNfcSupported();
-    isNfcEnable = await _flutterNfcHcePlugin.isNfcEnable();
+    isNfcHceSupported = await _flutterNfcHcePlugin.isNfcHceSupported();
+    isSecureNfcEnabled = await _flutterNfcHcePlugin.isSecureNfcEnabled();
+    isNfcEnabled = await _flutterNfcHcePlugin.isNfcEnabled();
   }
 
   void _onScanButtonPressed() async {
@@ -64,11 +64,11 @@ class _MyAppState extends State<MyApp> {
                           children: [
                             Text('platformVersion: ${platformVersion == null ? "": platformVersion}'),
                             SizedBox(height: 5,),
-                            Text('isSupportNfcHceFeature: ${isSupportNfcHceFeature == null ? "" : isSupportNfcHceFeature}'),
+                            Text('isSupportNfcHceFeature: ${isNfcHceSupported == null ? "" : isNfcHceSupported}'),
                             SizedBox(height: 5,),
-                            Text('isSupportSecureNfcSupported: ${isSupportSecureNfcSupported == null ? "" : isSupportSecureNfcSupported}'),
+                            Text('isSupportSecureNfcSupported: ${isSecureNfcEnabled == null ? "" : isSecureNfcEnabled}'),
                             SizedBox(height: 5,),
-                            Text('isNfcEnagle: ${isNfcEnable == null ? "" : isNfcEnable}'),
+                            Text('isNfcEnagle: ${isNfcEnabled == null ? "" : isNfcEnabled}'),
                           ],
                         ))
                 ),
