@@ -1,6 +1,7 @@
 package com.novice.flutter_nfc_hce
 
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.nfc.NdefMessage
 import android.nfc.NdefRecord
@@ -104,7 +105,7 @@ class KHostApduService : HostApduService() {
 
     //2023.09.15
     //Read an Ndef message from a file and initialize it as a variable
-    private var NDEF_URI = NdefMessage(readNdefMessageFromFile()?.let {
+    private var NDEF_URI = NdefMessage(readNdefMessageFromFile(this)?.let {
         createNdefRecord(
             it, "text/plain", NDEF_ID)
     })
@@ -115,15 +116,26 @@ class KHostApduService : HostApduService() {
         2,
     )
 
-    //2023.09.15 add variable
-    private val READ_BLOCK_SIZE: Int = 100
+    private var NDEF_MESSAGE: String? = readNdefMessageFromFile(this)
+
+    override fun onCreate() {
+        super.onCreate()
+        Log.i("NdefMessage_file", "onCreate() ->  ndefMessage initial value: " + NDEF_MESSAGE)
+    }
+
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent?.hasExtra("ndefMessage")!! && intent.hasExtra("mimeType")) {
             val ndefMessage = intent.getStringExtra("ndefMessage")!!
             val mimeType = intent.getStringExtra("mimeType")!!
 
-            writeNdefMessageToFile(ndefMessage)
+            if(readNdefMessageFromFile(this) == ndefMessage) {
+                Log.i("NdefMessage_file", "readNdefMessageFromFile() == ndefMessage ->ndefMessage: " + ndefMessage +", file message: " + readNdefMessageFromFile(this))
+
+            } else {
+                Log.i("NdefMessage_file", "readNdefMessageFromFile() != ndefMessage ->ndefMessage: " + ndefMessage +", file message: " + readNdefMessageFromFile(this))
+                writeNdefMessageToFile(this, ndefMessage)
+            }
 
             NDEF_URI = NdefMessage(createNdefRecord(ndefMessage, mimeType, NDEF_ID))
 
@@ -272,6 +284,8 @@ class KHostApduService : HostApduService() {
     //2023.09.15
     //Create a method with an additional 'mimeType' parameter.
     private fun createNdefRecord(message: String, mimeType: String, id: ByteArray): NdefRecord {
+        Log.i(TAG, "createNdefRecord(): $message")
+
         if(mimeType == "text/plain") {
             return createTextRecord("en", message, id);
         }
@@ -320,37 +334,43 @@ class KHostApduService : HostApduService() {
         return fillByteArrayToFixedDimension(filledArray, fixedSize)
     }
 
-    //2023.09.15 add method
-    private fun readNdefMessageFromFile(): String? {
-        var ndefMessage: String? = "Ciao, come va?"
+    //2023.09.15 add
+    companion object {
+        private val READ_BLOCK_SIZE: Int = 100
+        @JvmStatic
+        fun readNdefMessageFromFile(context: Context): String? {
+            var ndefMessage: String? = "Ciao, come va?"
 
-        try {
-            val fileIn: FileInputStream = openFileInput("NdefMessage.txt")
-            val InputRead = InputStreamReader(fileIn)
-            val inputBuffer = CharArray(READ_BLOCK_SIZE)
-            var charRead: Int
-            while (InputRead.read(inputBuffer).also { charRead = it } > 0) {
-                // char to string conversion
-                val readstring = String(inputBuffer, 0, charRead)
-                ndefMessage += readstring
+            try {
+                val fileIn: FileInputStream = context.openFileInput("NdefMessage.txt")
+                val InputRead = InputStreamReader(fileIn)
+                val inputBuffer = CharArray(READ_BLOCK_SIZE)
+                var charRead: Int
+                while (InputRead.read(inputBuffer).also { charRead = it } > 0) {
+                    // char to string conversion
+                    val readstring = String(inputBuffer, 0, charRead)
+                    ndefMessage = readstring
+                }
+                InputRead.close()
+
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
             }
-            InputRead.close()
 
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
+            return ndefMessage
         }
 
-        return ndefMessage
-    }
-
-    private fun writeNdefMessageToFile(ndefMessage: String) {
-        try {
-            val fileout: FileOutputStream = openFileOutput("NdefMessage.txt", MODE_PRIVATE)
-            val outputWriter = OutputStreamWriter(fileout)
-            outputWriter.write(ndefMessage)
-            outputWriter.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
+        @JvmStatic
+        fun writeNdefMessageToFile(context: Context, ndefMessage: String) {
+            try {
+                val fileout: FileOutputStream = context.openFileOutput("NdefMessage.txt", MODE_PRIVATE)
+                val outputWriter = OutputStreamWriter(fileout)
+                outputWriter.write(ndefMessage)
+                outputWriter.close()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
+
 }

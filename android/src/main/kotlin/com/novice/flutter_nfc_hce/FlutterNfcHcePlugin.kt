@@ -46,7 +46,7 @@ class FlutterNfcHcePlugin: FlutterPlugin, MethodCallHandler, ActivityAware  {
           }
           "stopNfcHce" -> {
               stopNfcHce()
-              result.success("true")
+              result.success("success")
           }
           "isNfcHceSupported" -> {
               if (isNfcHceSupported()) {

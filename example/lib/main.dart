@@ -33,14 +33,16 @@ class _MyAppState extends State<MyApp> {
     var content = 'flutter_nfc_hce';
     var result = await _flutterNfcHcePlugin.startNfcHce(content);
 
-    print('---------------------------------->' + result!);
+    print('---------------------------------->${result!}');
 
     setState(() {
       _showNFCScanDialog = true;
     });
   }
 
-  void _onCloseButtonPressed() {
+  void _onCloseButtonPressed() async {
+    await _flutterNfcHcePlugin.stopNfcHce();
+
     setState(() {
       _showNFCScanDialog = false;
     });

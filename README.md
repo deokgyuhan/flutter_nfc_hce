@@ -120,7 +120,7 @@ var content = 'flutter_nfc_hce';
 var result = await _flutterNfcHcePlugin.startNfcHce(content);
 
 //stop nfc hce 
-var result = await _flutterNfcHcePlugin.stopNfcHce();
+await _flutterNfcHcePlugin.stopNfcHce();
 ```
 
 ## 6. Update history
