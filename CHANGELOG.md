@@ -1,3 +1,7 @@
+## 0.1.7
+
+* Modify the README.md
+
 ## 0.1.6
 
 * Add the `persistMessage` option to the `startHce` function (with a default value of true).

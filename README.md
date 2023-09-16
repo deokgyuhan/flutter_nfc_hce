@@ -123,10 +123,10 @@ var result = await _flutterNfcHcePlugin.startNfcHce(content);
 await _flutterNfcHcePlugin.stopNfcHce();
 ```
 
-## 6. Update history
+## 5. Update history
 
 ### 2023.09.17 Update
-#### * Update Contributor:[BugsOverBugs](https://github.com/BugsOverBugs)
+#### * Update Contributor:[BugsOverBugs](https://github.com/BugsOverBugs), [atanasyordanov21](https://github.com/atanasyordanov21)
 1. Add the `persistMessage` option to the `startHce` function (with a default value of true).
 
 ```
