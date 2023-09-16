@@ -17,67 +17,68 @@ import io.flutter.plugin.common.MethodChannel.Result
 
 /** FlutterNfcHcePlugin */
 class FlutterNfcHcePlugin: FlutterPlugin, MethodCallHandler, ActivityAware  {
-  // add code
-  private var mNfcAdapter: NfcAdapter? = null
-  private var activity: Activity? = null
-  private lateinit var channel : MethodChannel
+    // add code
+    private var mNfcAdapter: NfcAdapter? = null
+    private var activity: Activity? = null
+    private lateinit var channel : MethodChannel
 
-  override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_nfc_hce")
-    channel.setMethodCallHandler(this)
-  }
+    override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+        channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_nfc_hce")
+        channel.setMethodCallHandler(this)
+    }
 
-  //2023.09.15 refactoring code
-  override fun onMethodCall(call: MethodCall, result: Result) {
-      when (call.method) {
-          "getPlatformVersion" -> {
-              result.success("Android ${android.os.Build.VERSION.RELEASE}")
-          }
-          "startNfcHce" -> {
-              val content = call.argument<String>("content")
-              val mimeType = call.argument<String>("mimeType")
+    //2023.09.15 refactoring code
+    override fun onMethodCall(call: MethodCall, result: Result) {
+        when (call.method) {
+            "getPlatformVersion" -> {
+                result.success("Android ${android.os.Build.VERSION.RELEASE}")
+            }
+            "startNfcHce" -> {
+                val content = call.argument<String>("content")
+                val mimeType = call.argument<String>("mimeType")
+                val persistMessage = call.argument<Boolean>("persistMessage")
 
-              if (content != null && mimeType != null) {
-                  startNfcHce(content, mimeType)
-                  result.success("success")
-              } else {
-                  result.success("failure")
-              }
-          }
-          "stopNfcHce" -> {
-              stopNfcHce()
-              result.success("success")
-          }
-          "isNfcHceSupported" -> {
-              if (isNfcHceSupported()) {
-                  result.success("true")
-              } else {
-                  result.success("false")
-              }
-          }
-          "isSecureNfcEnabled" -> {
-              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && isSecureNfcEnabled()) {
-                  result.success("true")
-              } else {
-                  result.success("false")
-              }
-          }
-          "isNfcEnabled" -> {
-              if (isNfcEnabled()) {
-                  result.success("true")
-              } else {
-                  result.success("false")
-              }
-          }
-          else -> {
-              result.notImplemented()
-          }
-      }
-  }
+                if (content != null && mimeType != null && persistMessage != null) {
+                    startNfcHce(content, mimeType, persistMessage)
+                    result.success("success")
+                } else {
+                    result.success("failure")
+                }
+            }
+            "stopNfcHce" -> {
+                stopNfcHce()
+                result.success("success")
+            }
+            "isNfcHceSupported" -> {
+                if (isNfcHceSupported()) {
+                    result.success("true")
+                } else {
+                    result.success("false")
+                }
+            }
+            "isSecureNfcEnabled" -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && isSecureNfcEnabled()) {
+                    result.success("true")
+                } else {
+                    result.success("false")
+                }
+            }
+            "isNfcEnabled" -> {
+                if (isNfcEnabled()) {
+                    result.success("true")
+                } else {
+                    result.success("false")
+                }
+            }
+            else -> {
+                result.notImplemented()
+            }
+        }
+    }
 
-  override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-    channel.setMethodCallHandler(null)
-  }
+    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        channel.setMethodCallHandler(null)
+    }
 
     override fun onDetachedFromActivity() {
         activity = null
@@ -98,10 +99,10 @@ class FlutterNfcHcePlugin: FlutterPlugin, MethodCallHandler, ActivityAware  {
         activity = null
         mNfcAdapter = null
     }
-    private fun startNfcHce(id: String, mimeType: String) {
+    private fun startNfcHce(content: String, mimeType: String, persistMessage: Boolean) {
         if (isNfcHceSupported()) {
-            Log.i("TEST", "---------------------->supportNfcHceFeature: "+isNfcHceSupported())
-            initService(id, mimeType)
+            Log.i("TEST", "---------------------->isNfcHceSupported: " + isNfcHceSupported())
+            initService(content, mimeType, persistMessage)
         }
     }
     private fun stopNfcHce() {
@@ -115,27 +116,20 @@ class FlutterNfcHcePlugin: FlutterPlugin, MethodCallHandler, ActivityAware  {
     //2023.09.08 add function
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun isSecureNfcEnabled(): Boolean {
-        Log.i("TEST", "---------------------->isSecureNfcEnabled: "+mNfcAdapter?.isSecureNfcEnabled)
+        Log.i("TEST", "---------------------->isSecureNfcEnabled: " + mNfcAdapter?.isSecureNfcEnabled)
 
-        return if (mNfcAdapter == null) {
-            false
-        } else {
-            mNfcAdapter?.isSecureNfcEnabled == true
-        }
+        return mNfcAdapter?.isSecureNfcEnabled == true
     }
 
-    private fun initService(id: String, mimeType: String) {
-      val intent = Intent(activity, KHostApduService::class.java)
-      intent.putExtra("ndefMessage", id)
-      intent.putExtra("mimeType", mimeType)
-      activity?.startService(intent)
+    private fun initService(content: String, mimeType: String, persistMessage: Boolean) {
+        val intent = Intent(activity, KHostApduService::class.java)
+        intent.putExtra("content", content)
+        intent.putExtra("mimeType", mimeType)
+        intent.putExtra("persistMessage", persistMessage)
+        activity?.startService(intent)
     }
 
     private fun isNfcEnabled(): Boolean {
-        return if (mNfcAdapter == null) {
-            false
-        } else {
-            mNfcAdapter?.isEnabled == true
-        }
+        return mNfcAdapter?.isEnabled == true
     }
 }

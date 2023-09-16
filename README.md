@@ -126,7 +126,7 @@ await _flutterNfcHcePlugin.stopNfcHce();
 ## 6. Update history
 
 ### 2023.09.16 Update
-#### * Update Contributor: BugsOverBugs (https://github.com/BugsOverBugs) 
+#### * Update Contributor:[BugsOverBugs](https://github.com/BugsOverBugs)
 
 1. Refactor the source code and function names.
 

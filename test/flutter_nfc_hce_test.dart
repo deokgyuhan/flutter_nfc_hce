@@ -24,7 +24,11 @@ class MockFlutterNfcHcePlatform
   }
 
   @override
-  Future<String?> startNfcHce(String content, String mimeType) {
+  Future<String?> startNfcHce(
+      String content,
+      String mimeType,
+      bool persistMessage,
+  ) {
     // TODO: implement startNfcHce
     throw UnimplementedError();
   }

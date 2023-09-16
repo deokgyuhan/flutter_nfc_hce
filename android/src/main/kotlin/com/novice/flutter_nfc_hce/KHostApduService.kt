@@ -1,5 +1,6 @@
 package com.novice.flutter_nfc_hce
 
+import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -103,8 +104,9 @@ class KHostApduService : HostApduService() {
 
     private val NDEF_ID = byteArrayOf(0xE1.toByte(), 0x04.toByte())
 
-    //2023.09.15
+    //2023.09.16
     //Read an Ndef message from a file and initialize it as a variable
+    //If the file does not exist, assign the default value 'Hello world.'
     private var NDEF_URI = NdefMessage(readNdefMessageFromFile(this)?.let {
         createNdefRecord(
             it, "text/plain", NDEF_ID)
@@ -117,27 +119,36 @@ class KHostApduService : HostApduService() {
     )
 
     private var NDEF_MESSAGE: String? = readNdefMessageFromFile(this)
+    private var NDEF_MESSAGE_PERSIST_FLAG: Boolean? = null
 
     override fun onCreate() {
         super.onCreate()
-        Log.i("NdefMessage_file", "onCreate() ->  ndefMessage initial value: " + NDEF_MESSAGE)
+        Log.i("onCreate()", "-> ndefMessage initial value: $NDEF_MESSAGE")
     }
 
-
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent?.hasExtra("ndefMessage")!! && intent.hasExtra("mimeType")) {
-            val ndefMessage = intent.getStringExtra("ndefMessage")!!
+        if (intent?.hasExtra("content")!!
+            && intent.hasExtra("mimeType")
+            && intent.hasExtra("persistMessage")) {
+
+            val content = intent.getStringExtra("content")!!
             val mimeType = intent.getStringExtra("mimeType")!!
 
-            if(readNdefMessageFromFile(this) == ndefMessage) {
-                Log.i("NdefMessage_file", "readNdefMessageFromFile() == ndefMessage ->ndefMessage: " + ndefMessage +", file message: " + readNdefMessageFromFile(this))
+            NDEF_MESSAGE_PERSIST_FLAG = intent.getBooleanExtra("persistMessage", true)
+
+            if(readNdefMessageFromFile(this) == content) {
+                Log.i("onStartCommand()", "readNdefMessageFromFile() == ndefMessage ->ndefMessage: " + content +", file message: " + readNdefMessageFromFile(this))
 
             } else {
-                Log.i("NdefMessage_file", "readNdefMessageFromFile() != ndefMessage ->ndefMessage: " + ndefMessage +", file message: " + readNdefMessageFromFile(this))
-                writeNdefMessageToFile(this, ndefMessage)
+                Log.i("onStartCommand()", "readNdefMessageFromFile() != ndefMessage ->ndefMessage: " + content +", file message: " + readNdefMessageFromFile(this))
             }
 
-            NDEF_URI = NdefMessage(createNdefRecord(ndefMessage, mimeType, NDEF_ID))
+           if(NDEF_MESSAGE_PERSIST_FLAG!!){
+                Log.i("onStartCommand()", "persistMessage == true -> writeNdefMessageToFile call, content: " + content)
+                writeNdefMessageToFile(this, content)
+           }
+
+            NDEF_URI = NdefMessage(createNdefRecord(content, mimeType, NDEF_ID))
 
             NDEF_URI_BYTES = NDEF_URI.toByteArray()
             NDEF_URI_LEN = fillByteArrayToFixedDimension(
@@ -283,18 +294,17 @@ class KHostApduService : HostApduService() {
 
     //2023.09.15
     //Create a method with an additional 'mimeType' parameter.
-    private fun createNdefRecord(message: String, mimeType: String, id: ByteArray): NdefRecord {
-        Log.i(TAG, "createNdefRecord(): $message")
+    private fun createNdefRecord(content: String, mimeType: String, id: ByteArray): NdefRecord {
+        Log.i(TAG, "createNdefRecord(): $content")
 
         if(mimeType == "text/plain") {
-            return createTextRecord("en", message, id);
+            return createTextRecord("en", content, id);
         }
-        val mimeTypeArray = mimeType.toByteArray(charset("US-ASCII"))
 
-        val payload = message.toByteArray(charset("UTF-8"))
-        Log.i(TAG, "message $message! mimeType: $mimeType")
+        val type = mimeType.toByteArray(charset("US-ASCII"))
+        val payload = content.toByteArray(charset("UTF-8"))
 
-        return NdefRecord(NdefRecord.TNF_MIME_MEDIA, mimeTypeArray, id, payload)
+        return NdefRecord(NdefRecord.TNF_MIME_MEDIA, type, id, payload)
     }
 
     private fun createTextRecord(language: String, text: String, id: ByteArray): NdefRecord {
@@ -334,12 +344,18 @@ class KHostApduService : HostApduService() {
         return fillByteArrayToFixedDimension(filledArray, fixedSize)
     }
 
-    //2023.09.15 add
+    override fun onDestroy() {
+        deleteNdefMessageFile(this)
+        super.onDestroy()
+    }
+
+    //2023.09.16 modify
     companion object {
         private val READ_BLOCK_SIZE: Int = 100
+        @SuppressLint("LongLogTag")
         @JvmStatic
         fun readNdefMessageFromFile(context: Context): String? {
-            var ndefMessage: String? = "Ciao, come va?"
+            var ndefMessage: String? = "Hello world"
 
             try {
                 val fileIn: FileInputStream = context.openFileInput("NdefMessage.txt")
@@ -353,6 +369,7 @@ class KHostApduService : HostApduService() {
                 }
                 InputRead.close()
 
+                Log.i("readNdefMessageFromFile()", "Read a message '"+ ndefMessage +"' from NdefMessage.txt.")
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
             }
@@ -360,6 +377,7 @@ class KHostApduService : HostApduService() {
             return ndefMessage
         }
 
+        @SuppressLint("LongLogTag")
         @JvmStatic
         fun writeNdefMessageToFile(context: Context, ndefMessage: String) {
             try {
@@ -367,10 +385,21 @@ class KHostApduService : HostApduService() {
                 val outputWriter = OutputStreamWriter(fileout)
                 outputWriter.write(ndefMessage)
                 outputWriter.close()
+
+                Log.i("writeNdefMessageToFile()", "Wrote a message to NdefMessage.txt.")
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+        @JvmStatic
+        fun deleteNdefMessageFile(context: Context) {
+            try {
+                context.deleteFile("NdefMessage.txt")
+                Log.i("deleteNdefMessageFile()", "The NdefMessage.txt has been deleted.")
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
     }
-
 }

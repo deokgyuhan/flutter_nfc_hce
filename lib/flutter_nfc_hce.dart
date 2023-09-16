@@ -5,13 +5,22 @@ class FlutterNfcHce {
     return FlutterNfcHcePlatform.instance.getPlatformVersion();
   }
 
+  /// Starts the NFC host card emulation.
+  /// If persistMessage is true, the NFC message is stored in a text file in the internal storage.
   Future<String?> startNfcHce(
       String content, {
         String mimeType = 'text/plain',
+        bool persistMessage = true,
       }) {
-    return FlutterNfcHcePlatform.instance.startNfcHce(content, mimeType);
+    return FlutterNfcHcePlatform.instance.startNfcHce(
+      content,
+      mimeType,
+      persistMessage,
+    );
   }
 
+  /// Starts the NFC host card emulation.
+  /// Deletes the saved  text file with the NFC message from the internal storage.
   Future<void> stopNfcHce() async {
     await FlutterNfcHcePlatform.instance.stopNfcHce();
   }
