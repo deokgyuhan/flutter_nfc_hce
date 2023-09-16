@@ -119,7 +119,6 @@ class KHostApduService : HostApduService() {
     )
 
     private var NDEF_MESSAGE: String? = readNdefMessageFromFile(this)
-    private var NDEF_MESSAGE_PERSIST_FLAG: Boolean? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -133,17 +132,16 @@ class KHostApduService : HostApduService() {
 
             val content = intent.getStringExtra("content")!!
             val mimeType = intent.getStringExtra("mimeType")!!
+            val persistMessage = intent.getBooleanExtra("persistMessage", true)
 
-            NDEF_MESSAGE_PERSIST_FLAG = intent.getBooleanExtra("persistMessage", true)
+//            if(readNdefMessageFromFile(this) == content) {
+//                Log.i("onStartCommand()", "readNdefMessageFromFile() == ndefMessage ->ndefMessage: " + content +", file message: " + readNdefMessageFromFile(this))
+//
+//            } else {
+//                Log.i("onStartCommand()", "readNdefMessageFromFile() != ndefMessage ->ndefMessage: " + content +", file message: " + readNdefMessageFromFile(this))
+//            }
 
-            if(readNdefMessageFromFile(this) == content) {
-                Log.i("onStartCommand()", "readNdefMessageFromFile() == ndefMessage ->ndefMessage: " + content +", file message: " + readNdefMessageFromFile(this))
-
-            } else {
-                Log.i("onStartCommand()", "readNdefMessageFromFile() != ndefMessage ->ndefMessage: " + content +", file message: " + readNdefMessageFromFile(this))
-            }
-
-           if(NDEF_MESSAGE_PERSIST_FLAG!!){
+           if(persistMessage){
                 Log.i("onStartCommand()", "persistMessage == true -> writeNdefMessageToFile call, content: " + content)
                 writeNdefMessageToFile(this, content)
            }

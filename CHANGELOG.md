@@ -1,3 +1,10 @@
+## 0.1.6
+
+* Add the `persistMessage` option to the `startHce` function (with a default value of true).
+* Delete the internal storage file when executing the `stopNfcHce` function.
+* Even if the `stopNfcHce` function is not executed and the app is closed, NFC HCE continues to operate. 
+  In this case, when you run `startNfcHce` after a device reboot, it reads the NDEF message from the internal storage file and initializes the message.
+
 ## 0.1.5
 
 * Refactor the source code and function names.

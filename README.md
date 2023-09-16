@@ -125,6 +125,30 @@ await _flutterNfcHcePlugin.stopNfcHce();
 
 ## 6. Update history
 
+### 2023.09.17 Update
+#### * Update Contributor:[BugsOverBugs](https://github.com/BugsOverBugs)
+1. Add the `persistMessage` option to the `startHce` function (with a default value of true).
+
+```
+ Future<String?> startNfcHce(
+      String content, {
+        String mimeType = 'text/plain',
+        bool persistMessage = true,
+      }) {
+    return FlutterNfcHcePlatform.instance.startNfcHce(
+      content,
+      mimeType,
+      persistMessage,
+    );
+  }
+```
+2. Delete the internal storage file when executing the `stopNfcHce` function.
+
+
+3. Even if the `stopNfcHce` function is not executed and the app is closed, NFC HCE continues to operate.
+   In this case, when you run `startNfcHce` after a device reboot, it reads the NDEF message from the internal storage file and initializes the message.
+
+
 ### 2023.09.16 Update
 #### * Update Contributor:[BugsOverBugs](https://github.com/BugsOverBugs)
 
