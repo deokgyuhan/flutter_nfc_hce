@@ -168,6 +168,14 @@ class KHostApduService : HostApduService() {
         Log.i(TAG, "processCommandApdu() | incoming commandApdu: " + commandApdu.toHex())
 
         //
+        // Command APDU of less than 5 bytes
+        //
+        if (commandApdu.size < 5) {
+            Log.i(TAG, "Received incomplete command APDU. Our Response: " + A_ERROR.toHex());
+            return A_ERROR;
+        }
+
+        //
         // First command: NDEF Tag Application select (Section 5.5.2 in NFC Forum spec)
         //
         if (APDU_SELECT.contentEquals(commandApdu)) {
