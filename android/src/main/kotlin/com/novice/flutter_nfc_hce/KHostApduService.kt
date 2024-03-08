@@ -180,6 +180,7 @@ class KHostApduService : HostApduService() {
         //
         if (APDU_SELECT.contentEquals(commandApdu)) {
             Log.i(TAG, "APDU_SELECT triggered. Our Response: " + A_OKAY.toHex())
+            READ_CAPABILITY_CONTAINER_CHECK = false
             return A_OKAY
         }
 
@@ -200,7 +201,6 @@ class KHostApduService : HostApduService() {
                 TAG,
                 "READ_CAPABILITY_CONTAINER triggered. Our Response: " + READ_CAPABILITY_CONTAINER_RESPONSE.toHex(),
             )
-            READ_CAPABILITY_CONTAINER_CHECK = true
             return READ_CAPABILITY_CONTAINER_RESPONSE
         }
 
@@ -209,6 +209,7 @@ class KHostApduService : HostApduService() {
         //
         if (NDEF_SELECT_OK.contentEquals(commandApdu)) {
             Log.i(TAG, "NDEF_SELECT_OK triggered. Our Response: " + A_OKAY.toHex())
+            READ_CAPABILITY_CONTAINER_CHECK = true
             return A_OKAY
         }
 
@@ -220,7 +221,6 @@ class KHostApduService : HostApduService() {
 
             Log.i(TAG, "NDEF_READ_BINARY_NLEN triggered. Our Response: " + response.toHex())
 
-            READ_CAPABILITY_CONTAINER_CHECK = false
             return response
         }
 
@@ -252,7 +252,6 @@ class KHostApduService : HostApduService() {
 
             Log.i(TAG, "NDEF_READ_BINARY triggered. Our Response: " + response.toHex())
 
-            READ_CAPABILITY_CONTAINER_CHECK = false
             return response
         }
 
