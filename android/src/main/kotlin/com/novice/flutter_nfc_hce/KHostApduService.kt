@@ -54,7 +54,6 @@ class KHostApduService : HostApduService() {
     // for ReadBinary would trigger and we don't want that in succession
     private var READ_CAPABILITY_CONTAINER_CHECK = false
 
-    //수정 부분
     private val READ_CAPABILITY_CONTAINER_RESPONSE = byteArrayOf(
         0x00.toByte(), 0x0F.toByte(), // CCLEN length of the CC file
         0x20.toByte(), // Mapping Version 2.0
@@ -63,7 +62,7 @@ class KHostApduService : HostApduService() {
         0x04.toByte(), // T field of the NDEF File Control TLV
         0x06.toByte(), // L field of the NDEF File Control TLV
         0xE1.toByte(), 0x04.toByte(), // File Identifier of NDEF file
-        0x00.toByte(), 0xFF.toByte(), // Maximum NDEF file size of 65534 bytes
+        0x7F.toByte(), 0xFF.toByte(), // Maximum NDEF file size of 32767 bytes
         0x00.toByte(), // Read access without any security
         0xFF.toByte(), // Write access without any security
         0x90.toByte(), 0x00.toByte(), // A_OKAY
@@ -169,10 +168,19 @@ class KHostApduService : HostApduService() {
         Log.i(TAG, "processCommandApdu() | incoming commandApdu: " + commandApdu.toHex())
 
         //
+        // Command APDU of less than 5 bytes
+        //
+        if (commandApdu.size < 5) {
+            Log.i(TAG, "Received incomplete command APDU. Our Response: " + A_ERROR.toHex());
+            return A_ERROR;
+        }
+
+        //
         // First command: NDEF Tag Application select (Section 5.5.2 in NFC Forum spec)
         //
         if (APDU_SELECT.contentEquals(commandApdu)) {
             Log.i(TAG, "APDU_SELECT triggered. Our Response: " + A_OKAY.toHex())
+            READ_CAPABILITY_CONTAINER_CHECK = false
             return A_OKAY
         }
 
@@ -193,7 +201,6 @@ class KHostApduService : HostApduService() {
                 TAG,
                 "READ_CAPABILITY_CONTAINER triggered. Our Response: " + READ_CAPABILITY_CONTAINER_RESPONSE.toHex(),
             )
-            READ_CAPABILITY_CONTAINER_CHECK = true
             return READ_CAPABILITY_CONTAINER_RESPONSE
         }
 
@@ -202,6 +209,7 @@ class KHostApduService : HostApduService() {
         //
         if (NDEF_SELECT_OK.contentEquals(commandApdu)) {
             Log.i(TAG, "NDEF_SELECT_OK triggered. Our Response: " + A_OKAY.toHex())
+            READ_CAPABILITY_CONTAINER_CHECK = true
             return A_OKAY
         }
 
@@ -213,7 +221,6 @@ class KHostApduService : HostApduService() {
 
             Log.i(TAG, "NDEF_READ_BINARY_NLEN triggered. Our Response: " + response.toHex())
 
-            READ_CAPABILITY_CONTAINER_CHECK = false
             return response
         }
 
@@ -245,7 +252,6 @@ class KHostApduService : HostApduService() {
 
             Log.i(TAG, "NDEF_READ_BINARY triggered. Our Response: " + response.toHex())
 
-            READ_CAPABILITY_CONTAINER_CHECK = false
             return response
         }
 
@@ -349,7 +355,7 @@ class KHostApduService : HostApduService() {
 
     //2023.09.16 modify
     companion object {
-        private val READ_BLOCK_SIZE: Int = 100
+        private val READ_BLOCK_SIZE: Int = 32767
         @SuppressLint("LongLogTag")
         @JvmStatic
         fun readNdefMessageFromFile(context: Context): String? {
