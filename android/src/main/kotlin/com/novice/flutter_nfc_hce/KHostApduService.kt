@@ -54,7 +54,6 @@ class KHostApduService : HostApduService() {
     // for ReadBinary would trigger and we don't want that in succession
     private var READ_CAPABILITY_CONTAINER_CHECK = false
 
-    //수정 부분
     private val READ_CAPABILITY_CONTAINER_RESPONSE = byteArrayOf(
         0x00.toByte(), 0x0F.toByte(), // CCLEN length of the CC file
         0x20.toByte(), // Mapping Version 2.0
@@ -63,7 +62,7 @@ class KHostApduService : HostApduService() {
         0x04.toByte(), // T field of the NDEF File Control TLV
         0x06.toByte(), // L field of the NDEF File Control TLV
         0xE1.toByte(), 0x04.toByte(), // File Identifier of NDEF file
-        0x00.toByte(), 0xFF.toByte(), // Maximum NDEF file size of 65534 bytes
+        0x7F.toByte(), 0xFF.toByte(), // Maximum NDEF file size of 32767 bytes
         0x00.toByte(), // Read access without any security
         0xFF.toByte(), // Write access without any security
         0x90.toByte(), 0x00.toByte(), // A_OKAY
@@ -349,7 +348,7 @@ class KHostApduService : HostApduService() {
 
     //2023.09.16 modify
     companion object {
-        private val READ_BLOCK_SIZE: Int = 100
+        private val READ_BLOCK_SIZE: Int = 32767
         @SuppressLint("LongLogTag")
         @JvmStatic
         fun readNdefMessageFromFile(context: Context): String? {
